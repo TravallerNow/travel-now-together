@@ -5,6 +5,13 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
 
+// Add TypeScript interface for the global window object
+declare global {
+  interface Window {
+    MapmyIndia?: any;
+  }
+}
+
 // Traveler pins for demo purposes
 const TRAVELERS = [
   { id: 1, lat: 28.6139, lng: 77.2090, name: "Alex", destination: "Delhi", img: "https://i.pravatar.cc/150?img=1" },
@@ -71,7 +78,11 @@ const MapView = ({ travelMode = false }: MapViewProps) => {
       script.onload = initializeMap;
       
       return () => {
-        document.body.removeChild(script);
+        // Clean up script when component unmounts
+        const scriptToRemove = document.getElementById('mapmyindia-script');
+        if (scriptToRemove && scriptToRemove.parentNode) {
+          scriptToRemove.parentNode.removeChild(scriptToRemove);
+        }
       };
     } else if (!mapInitialized) {
       initializeMap();
@@ -80,7 +91,7 @@ const MapView = ({ travelMode = false }: MapViewProps) => {
 
   // Update markers when travel mode changes
   useEffect(() => {
-    if (map && mapInitialized) {
+    if (map && mapInitialized && window.MapmyIndia) {
       // Clear existing markers
       markers.forEach(marker => marker.remove());
       setMarkers([]);
@@ -88,7 +99,6 @@ const MapView = ({ travelMode = false }: MapViewProps) => {
       // Add markers if in travel mode
       if (travelMode) {
         const newMarkers = TRAVELERS.map(traveler => {
-          // @ts-ignore - MapmyIndia API doesn't have TypeScript definitions
           const marker = new window.MapmyIndia.Marker({
             map: map,
             position: {lat: traveler.lat, lng: traveler.lng},
@@ -110,7 +120,6 @@ const MapView = ({ travelMode = false }: MapViewProps) => {
 
   const initializeMap = () => {
     if (window.MapmyIndia && !mapInitialized) {
-      // @ts-ignore - MapmyIndia API doesn't have TypeScript definitions
       const mapInstance = new window.MapmyIndia.Map('map-container', {
         center: [20.5937, 78.9629], // Center of India
         zoom: 5,
