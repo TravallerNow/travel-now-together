@@ -1,15 +1,33 @@
 
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
-import { Menu, MapPin, Search, Settings, User, MessageCircle, LogIn } from "lucide-react";
+import { Menu, MapPin, Search, MessageCircle, LogIn } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
-const Navbar = () => {
-  const [isTravelMode, setIsTravelMode] = useState(false);
+interface NavbarProps {
+  travelNowMode?: boolean;
+  onTravelModeChange?: (mode: boolean) => void;
+}
+
+const Navbar = ({ travelNowMode = false, onTravelModeChange }: NavbarProps) => {
+  const [isTravelMode, setIsTravelMode] = useState(travelNowMode);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // For demo purposes
+  const location = useLocation();
+
+  // Update internal state when prop changes
+  useEffect(() => {
+    setIsTravelMode(travelNowMode);
+  }, [travelNowMode]);
+
+  const handleTravelModeToggle = (checked: boolean) => {
+    setIsTravelMode(checked);
+    if (onTravelModeChange) {
+      onTravelModeChange(checked);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -42,7 +60,7 @@ const Navbar = () => {
                 </Link>
                 {isLoggedIn ? (
                   <Link to="/profile" className="flex items-center gap-2 text-lg font-semibold">
-                    <User className="h-5 w-5" />
+                    <Search className="h-5 w-5" />
                     Profile
                   </Link>
                 ) : (
@@ -64,16 +82,16 @@ const Navbar = () => {
         </div>
 
         <nav className="hidden md:flex items-center gap-6">
-          <Link to="/" className="text-sm font-medium hover:text-primary transition-colors">
+          <Link to="/" className={`text-sm font-medium hover:text-primary transition-colors ${location.pathname === '/' ? 'text-primary' : ''}`}>
             Home
           </Link>
-          <Link to="/explore" className="text-sm font-medium hover:text-primary transition-colors">
+          <Link to="/explore" className={`text-sm font-medium hover:text-primary transition-colors ${location.pathname === '/explore' ? 'text-primary' : ''}`}>
             Explore
           </Link>
-          <Link to="/trips" className="text-sm font-medium hover:text-primary transition-colors">
+          <Link to="/trips" className={`text-sm font-medium hover:text-primary transition-colors ${location.pathname === '/trips' ? 'text-primary' : ''}`}>
             Trips
           </Link>
-          <Link to="/messages" className="text-sm font-medium hover:text-primary transition-colors">
+          <Link to="/messages" className={`text-sm font-medium hover:text-primary transition-colors ${location.pathname === '/messages' ? 'text-primary' : ''}`}>
             Messages
           </Link>
         </nav>
@@ -83,7 +101,7 @@ const Navbar = () => {
             <span className={`text-sm font-medium ${isTravelMode ? "text-travel-green" : "text-muted-foreground"}`}>Travel Now</span>
             <Switch 
               checked={isTravelMode} 
-              onCheckedChange={setIsTravelMode}
+              onCheckedChange={handleTravelModeToggle}
               className={`${isTravelMode ? "bg-travel-green" : ""}`}
             />
           </div>

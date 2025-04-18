@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -15,14 +14,14 @@ const Index = () => {
   const [travelNowMode, setTravelNowMode] = useState(false);
   const [activeTab, setActiveTab] = useState("map");
   
-  const handleToggleTravelMode = () => {
-    setTravelNowMode(!travelNowMode);
+  const handleToggleTravelMode = (mode: boolean) => {
+    setTravelNowMode(mode);
     toast.success(
-      travelNowMode ? "Travel Now mode disabled" : "Travel Now mode activated! You're now visible to other travelers.", 
+      mode ? "Travel Now mode activated! You're now visible to other travelers." : "Travel Now mode disabled", 
       {
-        description: travelNowMode 
-          ? "You are no longer visible to other travelers." 
-          : "You can now see other travelers who are ready to explore.",
+        description: mode 
+          ? "You can now see other travelers who are ready to explore." 
+          : "You are no longer visible to other travelers.",
       }
     );
   };
@@ -41,7 +40,10 @@ const Index = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar />
+      <Navbar 
+        travelNowMode={travelNowMode} 
+        onTravelModeChange={handleToggleTravelMode} 
+      />
       
       <main className="flex-grow">
         {/* Hero Section */}
@@ -64,7 +66,7 @@ const Index = () => {
               
               <div className="flex flex-wrap gap-4">
                 <Button
-                  onClick={handleToggleTravelMode}
+                  onClick={() => handleToggleTravelMode(!travelNowMode)}
                   size="lg"
                   className={`text-white ${
                     travelNowMode 
@@ -213,7 +215,7 @@ const Index = () => {
               Turn on "Travel Now" mode to connect with fellow travelers who share your wanderlust and are ready to explore right now.
             </p>
             <Button 
-              onClick={handleToggleTravelMode}
+              onClick={() => handleToggleTravelMode(!travelNowMode)}
               size="lg" 
               className={`text-white ${
                 travelNowMode 
