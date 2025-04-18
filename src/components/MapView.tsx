@@ -73,9 +73,20 @@ const MapView = ({ travelMode = false }: MapViewProps) => {
       script.id = 'mapmyindia-script';
       script.async = true;
       script.defer = true;
+      
+      // Add detailed console logging
+      script.onload = () => {
+        console.log('MapmyIndia script loaded successfully');
+        console.log('Window.MapmyIndia:', window.MapmyIndia);
+        initializeMap();
+      };
+      
+      script.onerror = () => {
+        console.error('Failed to load MapmyIndia script');
+        toast.error('Map loading failed. Please check your internet connection.');
+      };
+      
       document.body.appendChild(script);
-
-      script.onload = initializeMap;
       
       return () => {
         // Clean up script when component unmounts
@@ -91,6 +102,7 @@ const MapView = ({ travelMode = false }: MapViewProps) => {
 
   // Update markers when travel mode changes
   useEffect(() => {
+    console.log('Travel mode changed, MapmyIndia:', window.MapmyIndia);
     if (map && mapInitialized && window.MapmyIndia) {
       // Clear existing markers
       markers.forEach(marker => marker.remove());
@@ -119,6 +131,7 @@ const MapView = ({ travelMode = false }: MapViewProps) => {
   }, [map, travelMode, mapInitialized]);
 
   const initializeMap = () => {
+    console.log('Attempting to initialize map, MapmyIndia:', window.MapmyIndia);
     if (window.MapmyIndia && !mapInitialized) {
       const mapInstance = new window.MapmyIndia.Map('map-container', {
         center: [20.5937, 78.9629], // Center of India
