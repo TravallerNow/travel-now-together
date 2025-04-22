@@ -17,6 +17,7 @@ import {
   CardContent,
 } from '@/components/ui/card';
 import { registerUser } from '@/services/api';
+import { User as UserType } from '@/types/health';
 
 const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -44,7 +45,7 @@ const Register = () => {
 
   const onSubmit = async (data: RegisterForm) => {
     try {
-      const userData: User = {
+      const userData: UserType = {
         email: data.email,
         password: data.password,
         role: data.role,
