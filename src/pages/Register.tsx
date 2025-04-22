@@ -44,7 +44,12 @@ const Register = () => {
 
   const onSubmit = async (data: RegisterForm) => {
     try {
-      await registerUser(data);
+      const userData: User = {
+        email: data.email,
+        password: data.password,
+        role: data.role,
+      };
+      await registerUser(userData);
       toast.success('Registration successful!');
       navigate('/login');
     } catch (error) {
